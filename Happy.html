@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Un día muy especial</title>
+	<style>
+		:root {
+			--ink: #26334d;
+			--muted: #6f7891;
+			--sky: #dff5ff;
+			--blue: #81cde9;
+			--pink: #ff8fab;
+			--yellow: #ffd970;
+			--paper: #fffdf8;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			overflow-x: hidden;
+			color: var(--ink);
+			font-family: Georgia, "Times New Roman", serif;
+			background:
+				radial-gradient(circle at 10% 20%, rgba(255,255,255,.9) 0 2px, transparent 3px),
+				radial-gradient(circle at 88% 12%, rgba(255,255,255,.85) 0 3px, transparent 4px),
+				linear-gradient(145deg, #c9f1ff 0%, #eafaff 45%, #fff1ef 100%);
+		}
+
+		.scene { position: relative; min-height: 100vh; padding: 32px 20px 46px; }
+		.cloud { position: absolute; border-radius: 50%; background: rgba(255,255,255,.6); filter: blur(1px); }
+		.cloud::after, .cloud::before { content: ""; position: absolute; border-radius: 50%; background: inherit; }
+		.cloud::before { width: 70px; height: 70px; left: 28px; bottom: -4px; }
+		.cloud::after { width: 90px; height: 90px; right: 20px; bottom: -12px; }
+		.cloud-one { width: 180px; height: 45px; top: 12%; left: -35px; }
+		.cloud-two { width: 150px; height: 38px; top: 31%; right: -45px; transform: scale(.8); }
+
+		.card {
+			position: relative;
+			width: min(920px, 100%);
+			margin: auto;
+			padding: clamp(28px, 6vw, 64px);
+			overflow: hidden;
+			text-align: center;
+			border: 3px solid rgba(255,255,255,.8);
+			border-radius: 28px;
+			background: rgba(255,253,248,.88);
+			box-shadow: 0 24px 70px rgba(66, 121, 155, .18), 0 4px 0 rgba(255,255,255,.9) inset;
+			backdrop-filter: blur(8px);
+		}
+
+		.ribbon { display: inline-block; padding: 8px 15px; color: #fff; font: 700 11px/1.2 Arial, sans-serif; letter-spacing: 2px; text-transform: uppercase; background: var(--pink); border-radius: 999px; box-shadow: 0 5px 0 #e57595; }
+		h1 { max-width: 680px; margin: 21px auto 12px; font-size: clamp(2.8rem, 8vw, 6.4rem); line-height: .91; letter-spacing: -3px; color: #273a62; }
+		h1 span { color: var(--pink); }
+		.subtitle { margin: 0 auto 30px; max-width: 550px; color: var(--muted); font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.55; }
+
+		.character-wrap { position: relative; width: 220px; height: 205px; margin: 10px auto 26px; }
+		.sparkle { position: absolute; z-index: 3; color: #f2bd38; font: 28px Arial, sans-serif; animation: twinkle 1.8s infinite ease-in-out; }
+		.sparkle.one { top: 18px; left: 8px; }
+		.sparkle.two { top: 40px; right: 4px; font-size: 20px; animation-delay: .7s; }
+		.bunny { position: absolute; left: 43px; bottom: 0; width: 135px; height: 140px; border: 3px solid #b5dce8; border-radius: 48% 48% 44% 44%; background: #fff; box-shadow: 0 11px 0 rgba(112,191,220,.25); }
+		.ear { position: absolute; z-index: -1; width: 53px; height: 125px; top: -82px; border: 3px solid #b5dce8; border-radius: 70% 40% 65% 40%; background: #fff; transform: rotate(-20deg); }
+		.ear::after { content: ""; position: absolute; inset: 12px 12px 15px; border-radius: inherit; background: #d9f5ff; }
+		.ear.left { left: -22px; }
+		.ear.right { right: -23px; transform: rotate(20deg) scaleX(-1); }
+		.eye { position: absolute; top: 54px; width: 10px; height: 14px; border-radius: 50%; background: #526488; }
+		.eye.left { left: 39px; } .eye.right { right: 39px; }
+		.blush { position: absolute; top: 78px; width: 22px; height: 10px; border-radius: 50%; background: #ffb7c6; opacity: .8; }
+		.blush.left { left: 12px; } .blush.right { right: 12px; }
+		.mouth { position: absolute; left: 59px; top: 75px; width: 18px; height: 12px; border-bottom: 3px solid #71809e; border-radius: 50%; }
+		.blue-hood { position: absolute; z-index: -1; left: -12px; right: -12px; bottom: -9px; height: 57px; border-radius: 50%; background: #91d9ed; }
+		.wing { position: absolute; top: 83px; width: 42px; height: 52px; border: 3px solid #b5dce8; border-radius: 70% 30% 70% 40%; background: #e8faff; }
+		.wing.left { left: -32px; transform: rotate(24deg); } .wing.right { right: -32px; transform: scaleX(-1) rotate(24deg); }
+		.surprise-scene { display: none; align-items: center; justify-content: center; gap: 18px; max-width: 620px; margin: 4px auto 26px; padding: 20px 18px 10px; border-radius: 22px; background: linear-gradient(135deg, #fff4f7, #eafaff); }
+		.surprise-scene.visible { display: flex; animation: reveal .65s ease both; }
+		.delivery-bunny { position: relative; width: 142px; height: 146px; flex: 0 0 142px; }
+		.delivery-bunny .bunny { transform: scale(.82); transform-origin: bottom center; }
+		.cake { position: relative; z-index: 2; width: 84px; height: 50px; margin-top: 50px; border: 3px solid #e59a9d; border-radius: 10px 10px 15px 15px; background: #ffb1b6; box-shadow: 0 8px 0 #e98d98; }
+		.cake::before { content: ""; position: absolute; left: -7px; top: -13px; width: 92px; height: 21px; border-radius: 50%; background: #fff9f0; border: 3px solid #e59a9d; }
+		.cake::after { content: "✦"; position: absolute; top: -52px; left: 35px; color: #f1b93d; font-size: 27px; text-shadow: 0 19px 0 #f1b93d; }
+		.love-note { position: relative; max-width: 255px; padding: 22px 20px 18px; color: #d9597b; font: 700 18px/1.25 Georgia, serif; background: #fff; border: 3px solid #ffb4c7; border-radius: 48% 52% 48% 52%; box-shadow: 0 7px 0 rgba(217,89,123,.12); }
+		.love-note::before { content: "♥"; position: absolute; top: -22px; right: -10px; color: #ff7d9f; font-size: 30px; transform: rotate(15deg); }
+
+		.actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+		button { border: 0; border-radius: 999px; padding: 14px 22px; color: #fff; font: 700 14px Arial, sans-serif; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; box-shadow: 0 5px 0 rgba(0,0,0,.12); }
+		button:hover { transform: translateY(-3px); } button:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,.12); }
+		.primary { background: var(--pink); } .secondary { color: #466079; background: var(--yellow); }
+		.message { min-height: 32px; margin: 22px auto 0; color: #d9597b; font-size: 1.18rem; font-style: italic; }
+		.footer-note { margin: 25px 0 0; color: #9aa2b4; font: 11px Arial, sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+		.heart { position: fixed; z-index: 10; pointer-events: none; animation: float-up 1.8s ease-out forwards; }
+		.confetti { position: fixed; z-index: 20; top: -20px; width: 10px; height: 18px; pointer-events: none; animation: fall 2.8s linear forwards; }
+		@keyframes float-up { from { opacity: 1; transform: translateY(0) rotate(0); } to { opacity: 0; transform: translateY(-180px) rotate(25deg); } }
+		@keyframes fall { to { transform: translateY(110vh) rotate(600deg); opacity: 0; } }
+		@keyframes twinkle { 50% { transform: scale(1.25) rotate(10deg); opacity: .45; } }
+		@keyframes reveal { from { opacity: 0; transform: translateY(15px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+		@media (max-width: 520px) { .scene { padding: 14px 10px 28px; } .card { padding: 30px 17px 28px; border-radius: 22px; } h1 { letter-spacing: -1px; } .actions button { width: 100%; } .surprise-scene { flex-wrap: wrap; gap: 4px; } .love-note { margin-top: 6px; } }
+	</style>
+</head>
+<body>
+	<main class="scene">
+		<div class="cloud cloud-one"></div><div class="cloud cloud-two"></div>
+		<section class="card" aria-labelledby="title">
+			<div class="ribbon">correo especial para ti</div>
+			<h1 id="title">¡Feliz <span>cumpleaños!</span></h1>
+			<p class="subtitle">Hoy el mundo tiene un poquito más de brillo porque existes tú. Que este nuevo año venga lleno de momentos suaves, risas enormes y sueños cumplidos.</p>
+
+			<div class="character-wrap" aria-label="Dibujo de un conejito blanco de orejas largas">
+				<span class="sparkle one">✦</span><span class="sparkle two">✧</span>
+				<div class="bunny"><div class="ear left"></div><div class="ear right"></div><div class="wing left"></div><div class="wing right"></div><div class="blue-hood"></div><div class="eye left"></div><div class="eye right"></div><div class="blush left"></div><div class="blush right"></div><div class="mouth"></div></div>
+			</div>
+			<div class="surprise-scene" id="surprise-scene" aria-live="polite">
+				<div class="delivery-bunny" aria-label="Cinnamoroll entregando un pastel"><div class="bunny"><div class="ear left"></div><div class="ear right"></div><div class="wing left"></div><div class="wing right"></div><div class="blue-hood"></div><div class="eye left"></div><div class="eye right"></div><div class="blush left"></div><div class="blush right"></div><div class="mouth"></div></div></div>
+				<div class="cake" aria-label="Pastel de cumpleaños"></div>
+				<div class="love-note">Feliz cumpleaños,<br>te doy todo el amor del mundo</div>
+			</div>
+
+			<div class="actions">
+				<button class="primary" id="surprise">Abrir mi sorpresa</button>
+				<button class="secondary" id="music" aria-pressed="false">♪ Un deseo</button>
+			</div>
+			<p class="message" id="message" aria-live="polite">Cinnamoroll guarda un regalito para ti ♡</p>
+			<p class="footer-note">hecho con cariño, pastel y estrellitas</p>
+		</section>
+	</main>
+	<audio id="birthday-song" preload="metadata" src="Happy B/ojos color sol.mpeg"></audio>
+
+	<script>
+		const message = document.querySelector('#message');
+		const surprise = document.querySelector('#surprise');
+		const surpriseScene = document.querySelector('#surprise-scene');
+		const music = document.querySelector('#music');
+		const birthdaySong = document.querySelector('#birthday-song');
+		const wishes = [
+			'Tu deseo ya va volando hacia las estrellas ✦',
+			'Que nunca te falten motivos para sonreír ♡',
+			'Hoy te toca recibir todo el cariño del mundo.',
+			'Una vuelta al sol más, y sigues brillando precioso.'
+		];
+		const colors = ['#ff8fab', '#81cde9', '#ffd970', '#a8dfb2', '#c7b6f4'];
+
+		function makeConfetti() {
+			for (let index = 0; index < 44; index += 1) {
+				const piece = document.createElement('i');
+				piece.className = 'confetti';
+				piece.style.left = `${Math.random() * 100}vw`;
+				piece.style.background = colors[index % colors.length];
+				piece.style.transform = `rotate(${Math.random() * 180}deg)`;
+				piece.style.animationDelay = `${Math.random() * .8}s`;
+				document.body.appendChild(piece);
+				setTimeout(() => piece.remove(), 3600);
+			}
+		}
+
+		surprise.addEventListener('click', () => {
+			surpriseScene.classList.add('visible');
+			message.textContent = 'Feliz cumpleaños, te doy todo el amor del mundo ♡';
+			makeConfetti();
+		});
+
+		music.addEventListener('click', () => {
+			const active = music.getAttribute('aria-pressed') === 'true';
+			if (active) {
+				birthdaySong.pause();
+				music.setAttribute('aria-pressed', 'false');
+				music.textContent = '♪ Un deseo';
+				message.textContent = 'Cinnamoroll guarda un regalito para ti ♡';
+				return;
+			}
+
+			birthdaySong.play().then(() => {
+				music.setAttribute('aria-pressed', 'true');
+				music.textContent = '♫ Deseo encendido';
+				message.textContent = 'Suena “Ojos color sol” para ti ✨';
+				makeConfetti();
+			}).catch(() => {
+				message.textContent = 'No se pudo cargar “Ojos color sol”. Revisa que el archivo esté en la carpeta Happy B ♡';
+			});
+		});
+
+		document.addEventListener('click', (event) => {
+			if (event.target.tagName !== 'BUTTON') {
+				const heart = document.createElement('span');
+				heart.className = 'heart'; heart.textContent = '♥'; heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+				heart.style.left = `${event.clientX - 8}px`; heart.style.top = `${event.clientY - 8}px`; document.body.appendChild(heart);
+				setTimeout(() => heart.remove(), 1900);
+			}
+		});
+	</script>
+</body>
+</html>
