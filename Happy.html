@@ -82,6 +82,9 @@
 		.cake::after { content: "✦"; position: absolute; top: -52px; left: 35px; color: #f1b93d; font-size: 27px; text-shadow: 0 19px 0 #f1b93d; }
 		.love-note { position: relative; max-width: 255px; padding: 22px 20px 18px; color: #d9597b; font: 700 18px/1.25 Georgia, serif; background: #fff; border: 3px solid #ffb4c7; border-radius: 48% 52% 48% 52%; box-shadow: 0 7px 0 rgba(217,89,123,.12); }
 		.love-note::before { content: "♥"; position: absolute; top: -22px; right: -10px; color: #ff7d9f; font-size: 30px; transform: rotate(15deg); }
+		.youtube-player { display: none; width: min(560px, 100%); margin: 0 auto 22px; overflow: hidden; border: 3px solid #ffb4c7; border-radius: 16px; background: #26334d; box-shadow: 0 8px 0 rgba(38,51,77,.12); }
+		.youtube-player.visible { display: block; animation: reveal .55s ease both; }
+		.youtube-player iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
 
 		.actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
 		button { border: 0; border-radius: 999px; padding: 14px 22px; color: #fff; font: 700 14px Arial, sans-serif; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; box-shadow: 0 5px 0 rgba(0,0,0,.12); }
@@ -115,6 +118,9 @@
 				<div class="cake" aria-label="Pastel de cumpleaños"></div>
 				<div class="love-note">Feliz cumpleaños,<br>te doy todo el amor del mundo</div>
 			</div>
+			<div class="youtube-player" id="youtube-player" aria-label="Canción de cumpleaños en YouTube">
+				<iframe id="youtube-frame" src="https://www.youtube.com/embed/Z2Vu0NZ6DnE?enablejsapi=1&playsinline=1" title="Ojos color sol" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+			</div>
 
 			<div class="actions">
 				<button class="primary" id="surprise">Abrir mi sorpresa</button>
@@ -124,14 +130,13 @@
 			<p class="footer-note">hecho con cariño, pastel y estrellitas</p>
 		</section>
 	</main>
-	<audio id="birthday-song" preload="metadata" src="Happy B/ojos color sol.mpeg"></audio>
-
 	<script>
 		const message = document.querySelector('#message');
 		const surprise = document.querySelector('#surprise');
 		const surpriseScene = document.querySelector('#surprise-scene');
 		const music = document.querySelector('#music');
-		const birthdaySong = document.querySelector('#birthday-song');
+		const youtubePlayer = document.querySelector('#youtube-player');
+		const youtubeFrame = document.querySelector('#youtube-frame');
 		const wishes = [
 			'Tu deseo ya va volando hacia las estrellas ✦',
 			'Que nunca te falten motivos para sonreír ♡',
@@ -162,21 +167,19 @@
 		music.addEventListener('click', () => {
 			const active = music.getAttribute('aria-pressed') === 'true';
 			if (active) {
-				birthdaySong.pause();
+				youtubeFrame.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":[]}', '*');
 				music.setAttribute('aria-pressed', 'false');
 				music.textContent = '♪ Un deseo';
 				message.textContent = 'Cinnamoroll guarda un regalito para ti ♡';
 				return;
 			}
 
-			birthdaySong.play().then(() => {
-				music.setAttribute('aria-pressed', 'true');
-				music.textContent = '♫ Deseo encendido';
-				message.textContent = 'Suena “Ojos color sol” para ti ✨';
-				makeConfetti();
-			}).catch(() => {
-				message.textContent = 'No se pudo cargar “Ojos color sol”. Revisa que el archivo esté en la carpeta Happy B ♡';
-			});
+			youtubePlayer.classList.add('visible');
+			youtubeFrame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":[]}', '*');
+			music.setAttribute('aria-pressed', 'true');
+			music.textContent = '♫ Deseo encendido';
+			message.textContent = 'Suena “Ojos color sol” para ti ✨';
+			makeConfetti();
 		});
 
 		document.addEventListener('click', (event) => {
