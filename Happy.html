@@ -88,6 +88,8 @@
 		button:hover { transform: translateY(-3px); } button:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,.12); }
 		.primary { background: var(--pink); } .secondary { color: #466079; background: var(--yellow); }
 		.message { min-height: 32px; margin: 22px auto 0; color: #d9597b; font-size: 1.18rem; font-style: italic; }
+		.surprise-messages { display: grid; gap: 9px; max-width: 560px; margin: 8px auto 0; }
+		.surprise-message { margin: 0; padding: 10px 16px; color: #53627d; font-size: 1rem; line-height: 1.4; border: 2px solid #ffd0dc; border-radius: 16px; background: rgba(255,255,255,.72); animation: reveal .45s ease both; }
 		.footer-note { margin: 25px 0 0; color: #9aa2b4; font: 11px Arial, sans-serif; letter-spacing: 1px; text-transform: uppercase; }
 		.heart { position: fixed; z-index: 10; pointer-events: none; animation: float-up 1.8s ease-out forwards; }
 		.confetti { position: fixed; z-index: 20; top: -20px; width: 10px; height: 18px; pointer-events: none; animation: fall 2.8s linear forwards; }
@@ -121,6 +123,7 @@
 				<button class="secondary" id="music" aria-pressed="false">♪ Un deseo</button>
 			</div>
 			<p class="message" id="message" aria-live="polite">Cinnamoroll guarda un regalito para ti ♡</p>
+			<div class="surprise-messages" id="surprise-messages" aria-live="polite"></div>
 			<p class="footer-note">hecho con cariño, pastel y estrellitas</p>
 		</section>
 	</main>
@@ -129,8 +132,17 @@
 		const message = document.querySelector('#message');
 		const surprise = document.querySelector('#surprise');
 		const surpriseScene = document.querySelector('#surprise-scene');
+		const surpriseMessages = document.querySelector('#surprise-messages');
 		const music = document.querySelector('#music');
 		const birthdaySong = document.querySelector('#birthday-song');
+		const birthdayMessages = [
+			'Eres una persona muy especial y querida ♡',
+			'Que todos tus sueños se hagan realidad ✨',
+			'Te mereces un día lleno de amor y alegría.',
+			'Gracias por existir y hacer más bonito el mundo.',
+			'Que este nuevo año esté lleno de momentos inolvidables.'
+		];
+		let birthdayMessageIndex = 0;
 		const wishes = [
 			'Tu deseo ya va volando hacia las estrellas ✦',
 			'Que nunca te falten motivos para sonreír ♡',
@@ -155,6 +167,11 @@
 		surprise.addEventListener('click', () => {
 			surpriseScene.classList.add('visible');
 			message.textContent = 'Feliz cumpleaños, te doy todo el amor del mundo ♡';
+			const newMessage = document.createElement('p');
+			newMessage.className = 'surprise-message';
+			newMessage.textContent = birthdayMessages[birthdayMessageIndex % birthdayMessages.length];
+			surpriseMessages.appendChild(newMessage);
+			birthdayMessageIndex += 1;
 			makeConfetti();
 		});
 
